@@ -1,6 +1,7 @@
 <script setup>
 const route = useRoute();
 const transparentBgRoute = ["home", "rooms"];
+import { Icon } from "@iconify/vue";
 
 const isTransparentRoute = computed(() =>
   transparentBgRoute.includes(route.name)
