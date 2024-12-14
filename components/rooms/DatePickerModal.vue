@@ -9,12 +9,13 @@ import { Icon } from "@iconify/vue";
 
 const modal = ref(null);
 
-// onMounted(() => {
-//   const modalEl = document.getElementById("dateModal");
-//   if (modalEl) {
-//     modal.value = new Modal(modalEl);
-//   }
-// });
+const { $modal } = useNuxtApp();
+onMounted(() => {
+  const modalEl = document.getElementById("dateModal");
+  if (modalEl) {
+    modal.value = new $modal(modalEl);
+  }
+});
 const openModal = () => {
   modal.value.show();
 };
