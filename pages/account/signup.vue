@@ -1,11 +1,75 @@
 <script setup>
 import { ref } from "vue";
+const { $swal } = useNuxtApp();
 import { RouterLink } from "vue-router";
 import { Icon } from "@iconify/vue";
 definePageMeta({
   layout: "account",
 });
+
+// 密碼一致性檢查
+const passwordMatchError = ref(false);
+
+const checkPasswordMatch = (confirmPassword) => {
+  if (userRegisteObject.value.password !== confirmPassword) {
+    passwordMatchError.value = true;
+  } else {
+    passwordMatchError.value = false;
+  }
+};
+
 const isEmailAndPasswordValid = ref(false);
+const selectedYear = ref(1982);
+const selectedMonth = ref(2);
+const selectedDay = ref(4);
+
+const userRegisteObject = ref({
+  name: "",
+  email: "",
+  password: "",
+  phone: "",
+  birthday: "",
+  address: {
+    zipcode: "",
+    detail: "",
+  },
+});
+
+const updateBirthday = () => {
+  if (selectedYear.value && selectedMonth.value && selectedDay.value) {
+    userRegisteObject.value.birthday = `${selectedYear.value}/${selectedMonth.value}/${selectedDay.value}`;
+  }
+};
+updateBirthday();
+
+const processRegistration = async (requsetBody) => {
+  try {
+    const response = await $fetch("/v1/user/signup", {
+      baseURL: "https://nuxr3.zeabur.app/api",
+      method: "POST",
+      body: {
+        ...requsetBody,
+      },
+    });
+    await $swal.fire({
+      position: "center",
+      icon: "success",
+      title: "註冊成功",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    router.push("/");
+  } catch (error) {
+    const { message } = error.response._data;
+    $swal.fire({
+      position: "center",
+      icon: "error",
+      title: message,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+};
 </script>
 
 <template>
@@ -65,6 +129,7 @@ const isEmailAndPasswordValid = ref(false);
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
             placeholder="hello@exsample.com"
             type="email"
+            v-model="userRegisteObject.email"
           />
         </div>
         <div class="mb-4 fs-8 fs-md-7">
@@ -76,6 +141,7 @@ const isEmailAndPasswordValid = ref(false);
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
             placeholder="請輸入密碼"
             type="password"
+            v-model="userRegisteObject.password"
           />
         </div>
         <div class="mb-10 fs-8 fs-md-7">
@@ -87,7 +153,12 @@ const isEmailAndPasswordValid = ref(false);
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
             placeholder="請再輸入一次密碼"
             type="password"
+            @input="checkPasswordMatch($event.target.value)"
           />
+          <!-- 顯示錯誤訊息 -->
+          <p v-if="passwordMatchError" class="text-danger fs-8">
+            密碼不一致，請重新確認
+          </p>
         </div>
         <button
           class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold"
@@ -102,6 +173,7 @@ const isEmailAndPasswordValid = ref(false);
           <label class="mb-2 text-neutral-0 fw-bold" for="name"> 姓名 </label>
           <input
             id="name"
+            v-model="userRegisteObject.name"
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40 rounded-3"
             placeholder="請輸入姓名"
             type="text"
@@ -115,6 +187,7 @@ const isEmailAndPasswordValid = ref(false);
             id="phone"
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40 rounded-3"
             placeholder="請輸入手機號碼"
+            v-model="userRegisteObject.phone"
             type="tel"
           />
         </div>
@@ -123,54 +196,51 @@ const isEmailAndPasswordValid = ref(false);
           <div class="d-flex gap-2">
             <select
               id="birth"
+              v-model="selectedYear"
+              @change="updateBirthday"
               class="form-select p-4 text-neutral-80 fw-medium rounded-3"
             >
-              <option
-                v-for="year in 65"
-                :key="year"
-                value="`${year + 1958} 年`"
-              >
+              <option v-for="year in 65" :key="year" :value="year + 1958">
                 {{ year + 1958 }} 年
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="month in 12" :key="month" value="`${month} 月`">
+            <select
+              v-model="selectedMonth"
+              @change="updateBirthday"
+              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+            >
+              <option v-for="month in 12" :key="month" :value="month">
                 {{ month }} 月
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="day in 30" :key="day" value="`${day} 日`">
+            <select
+              v-model="selectedDay"
+              @change="updateBirthday"
+              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+            >
+              <option v-for="day in 31" :key="day" :value="day">
                 {{ day }} 日
               </option>
             </select>
           </div>
+        </div>
+        <div class="d-flex gap-2 mb-2">
+          <label class="form-label text-neutral-0 fw-bold" for="zipcode">
+            郵遞區號
+          </label>
+          <input v-model="userRegisteObject.address.zipcode" type="text" />
         </div>
         <div class="mb-4 fs-8 fs-md-7">
           <label class="form-label text-neutral-0 fw-bold" for="address">
             地址
           </label>
           <div>
-            <div class="d-flex gap-2 mb-2">
-              <select
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-              >
-                <option value="臺北市">臺北市</option>
-                <option value="臺中市">臺中市</option>
-                <option selected value="高雄市">高雄市</option>
-              </select>
-              <select
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-              >
-                <option value="前金區">前金區</option>
-                <option value="鹽埕區">鹽埕區</option>
-                <option selected value="新興區">新興區</option>
-              </select>
-            </div>
             <input
               id="address"
               type="text"
               class="form-control p-4 rounded-3"
               placeholder="請輸入詳細地址"
+              v-model="userRegisteObject.address.detail"
             />
           </div>
         </div>
@@ -191,6 +261,7 @@ const isEmailAndPasswordValid = ref(false);
         <button
           class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
           type="button"
+          @click="processRegistration(userRegisteObject)"
         >
           完成註冊
         </button>
@@ -199,12 +270,12 @@ const isEmailAndPasswordValid = ref(false);
 
     <p class="mb-0 fs-8 fs-md-7">
       <span class="me-2 text-neutral-0 fw-medium">已經有會員了嗎？</span>
-      <RouterLink
+      <NuxtLink
         to="login"
         class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
       >
         <span>立即登入</span>
-      </RouterLink>
+      </NuxtLink>
     </p>
   </div>
 </template>

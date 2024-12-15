@@ -5,7 +5,24 @@ export default defineNuxtConfig({
   css: ["@/assets/stylesheets/all.scss"],
   runtimeConfig: {
     public: {
-      apiBase: "https://nuxr3.zeabur.app",
+      apiUrl: "https://nuxr3.zeabur.app",
+    },
+  },
+  app: {
+    head: {
+      viewport: "width=500, initial-scale=1",
+      title: "Freyja 旅館",
+      meta: [
+        {
+          name: "description",
+          content: "李承哲的Nuxt作品",
+        },
+        { property: "og:title", content: "李承哲的Nuxt作品" },
+        {
+          property: "og:description",
+          content: "李承哲的Nuxt作品",
+        },
+      ],
     },
   },
 });

@@ -13,6 +13,7 @@
     "bootstrap": "^5.3.3",
     "nuxt": "^3.14.1592",
     "swiper": "^11.1.15",
+    "sweetalert2": "^11.12.4",
     "vue": "latest",
     "vue-router": "latest",
     "v-calendar": "^3.1.2",
