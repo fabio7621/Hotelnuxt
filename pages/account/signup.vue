@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from "vue";
 const { $swal } = useNuxtApp();
-import { RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 definePageMeta({
   layout: "account",
 });
-
+const router = useRouter();
 // 密碼一致性檢查
 const passwordMatchError = ref(false);
 
@@ -58,7 +58,7 @@ const processRegistration = async (requsetBody) => {
       showConfirmButton: false,
       timer: 1500,
     });
-    router.push("/");
+    router.push("/account/login");
   } catch (error) {
     const { message } = error.response._data;
     $swal.fire({
