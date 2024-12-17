@@ -1,13 +1,13 @@
 <script setup>
-import { ref } from "vue";
 const { $swal } = useNuxtApp();
-import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
+
 definePageMeta({
   layout: "account",
 });
+
 const router = useRouter();
-// 密碼一致性檢查
+
 const passwordMatchError = ref(false);
 
 const checkPasswordMatch = (confirmPassword) => {
@@ -42,10 +42,13 @@ const updateBirthday = () => {
 };
 updateBirthday();
 
+const config = useRuntimeConfig();
+const apiUrl = config.public.apiUrl;
+
 const processRegistration = async (requsetBody) => {
   try {
-    const response = await $fetch("/v1/user/signup", {
-      baseURL: "https://nuxr3.zeabur.app/api",
+    const response = await $fetch("api/v1/user/signup", {
+      baseURL: apiUrl,
       method: "POST",
       body: {
         ...requsetBody,

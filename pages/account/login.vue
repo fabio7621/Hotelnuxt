@@ -2,6 +2,53 @@
 definePageMeta({
   layout: "account",
 });
+
+const { $swal } = useNuxtApp();
+const router = useRouter();
+const config = useRuntimeConfig();
+const apiUrl = config.public.apiUrl;
+// 表單格式
+const userLoginObject = ref({
+  email: "",
+  password: "",
+});
+
+const loginAccount = async (requsetBody) => {
+  try {
+    const { token } = await $fetch("api/v1/user/login", {
+      baseURL: apiUrl,
+      method: "POST",
+      body: {
+        ...requsetBody,
+      },
+    });
+
+    const auth = useCookie("auth", {
+      path: "/",
+    });
+    auth.value = token;
+
+    $swal.fire({
+      position: "center",
+      icon: "success",
+      title: "登入成功",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+
+    router.push("/");
+  } catch (error) {
+    console.dir(error);
+    const { message } = error.response._data;
+    $swal.fire({
+      position: "center",
+      icon: "error",
+      title: message,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+};
 </script>
 
 <template>
@@ -21,9 +68,9 @@ definePageMeta({
         <input
           id="email"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
           placeholder="請輸入信箱"
           type="email"
+          v-model="userLoginObject.email"
         />
       </div>
       <div class="mb-4 fs-8 fs-md-7">
@@ -31,9 +78,9 @@ definePageMeta({
         <input
           id="password"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
           placeholder="請輸入密碼"
           type="password"
+          v-model="userLoginObject.password"
         />
       </div>
       <div
@@ -60,6 +107,7 @@ definePageMeta({
       <button
         class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
         type="button"
+        @click="loginAccount(userLoginObject)"
       >
         會員登入
       </button>
