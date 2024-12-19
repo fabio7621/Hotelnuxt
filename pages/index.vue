@@ -19,6 +19,28 @@ const slidePrev = () => {
 const slideNext = () => {
   roomSwiper.value.$el.swiper.slideNext();
 };
+const newsList = ref([]);
+const roomProfile = ref({});
+const config = useRuntimeConfig();
+const apiUrl = config.public.apiUrl;
+
+// 最新消息
+const { data: news } = await useFetch("api/v1/home/news", {
+  baseURL: apiUrl,
+});
+//取得特定房型
+const roomId = "653e4661336cdccc752127a0";
+const { data: room } = await useFetch(`api/v1/rooms/${roomId}`, {
+  baseURL: apiUrl,
+});
+onMounted(() => {
+  if (news.value?.result) {
+    newsList.value = news.value.result;
+  }
+  if (room.value?.result) {
+    roomProfile.value = room.value.result;
+  }
+});
 </script>
 
 <template>
@@ -47,7 +69,6 @@ const slideNext = () => {
           </picture>
         </swiper-slide>
       </swiper>
-
       <div
         class="hero-wrapper d-flex flex-column justify-content-center align-items-center flex-md-row justify-content-md-between gap-md-10 w-100 px-md-20 position-absolute z-2"
       >
@@ -92,77 +113,28 @@ const slideNext = () => {
             </div>
           </div>
           <div class="col-12 col-md-10 d-flex flex-column gap-10">
-            <div class="card bg-transparent border-0">
+            <div
+              v-for="news in newsList"
+              :key="news._id"
+              class="card bg-transparent border-0"
+            >
               <div
                 class="d-flex flex-column flex-md-row align-items-center gap-6"
               >
                 <picture>
-                  <source
-                    srcset="@/assets/images/home-news-1.png"
-                    media="(min-width: 576px)"
-                  />
+                  <source :srcset="news.image" media="(min-width: 576px)" />
                   <img
-                    src="@/assets/images/home-news-sm-1.png"
+                    :src="news.image"
                     class="w-100 rounded-3"
                     alt="可看見海景及泳池的套房"
                   />
                 </picture>
                 <div class="card-body p-0">
                   <h3 class="card-title mb-2 mb-md-6 fw-bold">
-                    秋季旅遊，豪華享受方案
+                    {{ news.title }}
                   </h3>
                   <p class="card-text text-neutral-80 fs-8 fs-md-7 fw-medium">
-                    秋天就是要來場豪華的旅遊！我們為您準備了一系列的秋季特別方案，包括舒適的住宿、美食饗宴，以及精彩的活動。不論您是想來一趟浪漫之旅，還是想和家人共度美好時光，都能在這裡找到最適合的方案。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="card bg-transparent border-0">
-              <div
-                class="d-flex flex-column flex-md-row align-items-center gap-6"
-              >
-                <picture>
-                  <source
-                    srcset="@/assets/images/home-news-2.png"
-                    media="(min-width: 576px)"
-                  />
-                  <img
-                    src="@/assets/images/home-news-sm-2.png"
-                    class="w-100 rounded-3"
-                    alt="在雙人床上的兩顆灰色枕頭"
-                  />
-                </picture>
-                <div class="card-body p-0">
-                  <h3 class="card-title mb-2 mb-md-6 fw-bold">輕鬆住房專案</h3>
-                  <p class="card-text text-neutral-80 fs-8 fs-md-7 fw-medium">
-                    我們知道，有時候您只是需要一個舒適的地方放鬆心情。因此，我們推出了「輕鬆住房專案」，讓您無壓力地享受住宿。不管是短期的休息，還是長期的住宿，我們都會以最貼心的服務，讓您感到賓至如歸。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="card bg-transparent border-0">
-              <div
-                class="d-flex flex-column flex-md-row align-items-center gap-6"
-              >
-                <picture>
-                  <source
-                    srcset="@/assets/images/home-news-3.png"
-                    media="(min-width: 576px)"
-                  />
-                  <img
-                    src="@/assets/images/home-news-sm-3.png"
-                    class="w-100 rounded-3"
-                    alt="坐在沙發上的聖誕麋鹿玩偶"
-                  />
-                </picture>
-                <div class="card-body p-0">
-                  <h3 class="card-title mb-2 mb-md-6 fw-bold">
-                    耶誕快樂，住房送禮
-                  </h3>
-                  <p class="card-text text-neutral-80 fs-8 fs-md-7 fw-medium">
-                    聖誕節來臨，我們為您準備了特別的禮物！在聖誕期間訂房，不僅有特別優惠，還會送上我們精心準備的聖誕禮物。讓我們一起慶祝這個溫馨的節日吧！
+                    {{ news.description }}
                   </p>
                 </div>
               </div>
@@ -236,18 +208,18 @@ const slideNext = () => {
         </swiper>
 
         <div class="room-intro-content text-neutral-0">
-          <h2 class="mb-2 mb-md-4 fw-bold">尊爵雙人房</h2>
+          <h2 class="mb-2 mb-md-4 fw-bold">{{ roomProfile.name }}</h2>
           <p class="mb-6 mb-md-10 fs-8 fs-md-7">
-            享受高級的住宿體驗，尊爵雙人房提供給您舒適寬敞的空間和精緻的裝潢。
+            {{ roomProfile.description }}
           </p>
           <div class="mb-6 mb-md-10 fs-3 fw-bold">NT$ 10,000</div>
-          <RouterLink
-            to="/rooms"
+          <NuxtLink
+            :to="`/rooms/${roomProfile._id}`"
             class="btn btn-neutral-0 d-flex justify-content-end align-items-center gap-3 w-100 p-5 p-md-10 mb-6 mb-md-10 text-end text-neutral-100 fs-7 fs-md-5 fw-bold border-0"
           >
             查看更多
             <div class="cta-deco" />
-          </RouterLink>
+          </NuxtLink>
           <div class="d-flex justify-content-end">
             <button
               class="bg-transparent text-primary-100 icon-link icon-link-hover border-0"

@@ -15,7 +15,7 @@ const userLoginObject = ref({
 
 const loginAccount = async (requsetBody) => {
   try {
-    const { token } = await $fetch("api/v1/user/login", {
+    const { token } = await $fetch("api/v1/home/news", {
       baseURL: apiUrl,
       method: "POST",
       body: {
