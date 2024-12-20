@@ -21,6 +21,7 @@ const slideNext = () => {
 };
 const newsList = ref([]);
 const roomProfile = ref({});
+const foodList = ref({});
 const config = useRuntimeConfig();
 const apiUrl = config.public.apiUrl;
 
@@ -29,8 +30,12 @@ const { data: news } = await useFetch("api/v1/home/news", {
   baseURL: apiUrl,
 });
 //取得特定房型
-const roomId = "653e4661336cdccc752127a0";
-const { data: room } = await useFetch(`api/v1/rooms/${roomId}`, {
+const roomId = "66b0912cafe4327b9a56379c";
+const { data: room, error: roomError } = await useFetch(`api/v1/rooms/${roomId}`, {
+  baseURL: apiUrl,
+});
+//取得食物
+const { data: foods, error: foooError } = await useFetch(`/api/v1/home/culinary/`, {
   baseURL: apiUrl,
 });
 onMounted(() => {
@@ -39,6 +44,9 @@ onMounted(() => {
   }
   if (room.value?.result) {
     roomProfile.value = room.value.result;
+  }
+  if (foods.value?.result) {
+    foodList.value = foods.value.result;
   }
 });
 </script>
@@ -57,24 +65,15 @@ onMounted(() => {
       >
         <swiper-slide v-for="(num, index) in 5" :key="index">
           <picture>
-            <source
-              srcset="@/assets/images/home-hero.png"
-              media="(min-width:576px)"
-            />
-            <img
-              class="hero-img"
-              src="@/assets/images/home-hero-sm.png"
-              alt="hero banner"
-            />
+            <source srcset="@/assets/images/home-hero.png" media="(min-width:576px)" />
+            <img class="hero-img" src="@/assets/images/home-hero-sm.png" alt="hero banner" />
           </picture>
         </swiper-slide>
       </swiper>
       <div
         class="hero-wrapper d-flex flex-column justify-content-center align-items-center flex-md-row justify-content-md-between gap-md-10 w-100 px-md-20 position-absolute z-2"
       >
-        <div
-          class="d-flex flex-column align-items-center text-center d-md-block text-md-start"
-        >
+        <div class="d-flex flex-column align-items-center text-center d-md-block text-md-start">
           <div class="mt-10 mb-5 mt-md-0 mb-md-10 text-primary-100 fw-bold">
             <h2>享樂酒店</h2>
             <h5 class="mb-0 fs-7 fs-md-5">Enjoyment Luxury Hotel</h5>
@@ -83,12 +82,8 @@ onMounted(() => {
         </div>
         <div class="hero__intro position-relative">
           <div class="hero__intro-content">
-            <h1 class="mb-6 text-white fw-bold text-nowrap">
-              高雄<br />豪華住宿之選
-            </h1>
-            <p class="text-neutral-40 fw-semibold">
-              我們致力於為您提供無與倫比的奢華體驗與優質服務
-            </p>
+            <h1 class="mb-6 text-white fw-bold text-nowrap">高雄<br />豪華住宿之選</h1>
+            <p class="text-neutral-40 fw-semibold">我們致力於為您提供無與倫比的奢華體驗與優質服務</p>
             <NuxtLink
               to="/rooms"
               class="btn btn-neutral-0 d-flex justify-content-end align-items-center gap-3 w-100 text-end text-neutral-100 fs-5 fw-semibold border-0"
@@ -106,28 +101,16 @@ onMounted(() => {
         <div class="row">
           <div class="col-12 col-md-2">
             <div class="mb-10 mb-md-0">
-              <h2 class="mb-6 mb-md-10 fs-1 fw-bold text-primary-100">
-                最新<br />消息
-              </h2>
+              <h2 class="mb-6 mb-md-10 fs-1 fw-bold text-primary-100">最新<br />消息</h2>
               <div class="deco-line" />
             </div>
           </div>
           <div class="col-12 col-md-10 d-flex flex-column gap-10">
-            <div
-              v-for="news in newsList"
-              :key="news._id"
-              class="card bg-transparent border-0"
-            >
-              <div
-                class="d-flex flex-column flex-md-row align-items-center gap-6"
-              >
+            <div v-for="news in newsList" :key="news._id" class="card bg-transparent border-0">
+              <div class="d-flex flex-column flex-md-row align-items-center gap-6">
                 <picture>
                   <source :srcset="news.image" media="(min-width: 576px)" />
-                  <img
-                    :src="news.image"
-                    class="w-100 rounded-3"
-                    alt="可看見海景及泳池的套房"
-                  />
+                  <img :src="news.image" class="w-100 rounded-3" alt="可看見海景及泳池的套房" />
                 </picture>
                 <div class="card-body p-0">
                   <h3 class="card-title mb-2 mb-md-6 fw-bold">
@@ -146,9 +129,7 @@ onMounted(() => {
 
     <section class="about position-relative z-n1 bg-neutral-120 py-20 py-md-30">
       <div class="container p-0">
-        <div
-          class="about-content p-6 p-md-20 mt-10 ms-10 me-5 mt-md-20 mx-md-auto text-neutral-0"
-        >
+        <div class="about-content p-6 p-md-20 mt-10 ms-10 me-5 mt-md-20 mx-md-auto text-neutral-0">
           <div class="d-flex align-items-center gap-10 mb-10 mb-md-20">
             <h2 class="text-nowrap mb-0 fs-1 fw-bold">關於<br />我們</h2>
             <div class="deco-line" />
@@ -175,12 +156,8 @@ onMounted(() => {
       </div>
     </section>
 
-    <section
-      class="room-intro position-relative px-3 py-20 px-md-0 py-md-30 bg-neutral-120"
-    >
-      <div
-        class="d-flex flex-column flex-md-row justify-content-center align-items-center justify-content-md-start align-items-md-end gap-6 gap-md-20"
-      >
+    <section class="room-intro position-relative px-3 py-20 px-md-0 py-md-30 bg-neutral-120">
+      <div class="d-flex flex-column flex-md-row justify-content-center align-items-center justify-content-md-start align-items-md-end gap-6 gap-md-20">
         <swiper
           ref="roomSwiper"
           :modules="modules"
@@ -192,27 +169,18 @@ onMounted(() => {
           }"
           :loop="true"
         >
-          <swiper-slide v-for="(num, index) in 5" :key="index">
+          <swiper-slide v-for="(num, index) in roomProfile.imageUrlList" :key="index">
             <picture>
-              <source
-                srcset="@/assets/images/home-room-1.png"
-                media="(min-width:768px)"
-              />
-              <img
-                class="w-100"
-                src="@/assets/images/home-room-sm-1.png"
-                alt="room-a"
-              />
+              <source :srcset="num" media="(min-width:768px)" />
+              <img class="w-100" :src="num" alt="room-a" />
             </picture>
           </swiper-slide>
         </swiper>
 
         <div class="room-intro-content text-neutral-0">
           <h2 class="mb-2 mb-md-4 fw-bold">{{ roomProfile.name }}</h2>
-          <p class="mb-6 mb-md-10 fs-8 fs-md-7">
-            {{ roomProfile.description }}
-          </p>
-          <div class="mb-6 mb-md-10 fs-3 fw-bold">NT$ 10,000</div>
+          <p class="mb-6 mb-md-10 fs-8 fs-md-7">{{ roomProfile.description }}</p>
+          <div class="mb-6 mb-md-10 fs-3 fw-bold">{{ roomProfile.price }}</div>
           <NuxtLink
             :to="`/rooms/${roomProfile._id}`"
             class="btn btn-neutral-0 d-flex justify-content-end align-items-center gap-3 w-100 p-5 p-md-10 mb-6 mb-md-10 text-end text-neutral-100 fs-7 fs-md-5 fw-bold border-0"
@@ -221,30 +189,11 @@ onMounted(() => {
             <div class="cta-deco" />
           </NuxtLink>
           <div class="d-flex justify-content-end">
-            <button
-              class="bg-transparent text-primary-100 icon-link icon-link-hover border-0"
-              type="button"
-              @click="slidePrev"
-            >
-              <Icon
-                icon="mdi:arrow-left"
-                class="bi m-4"
-                style="
-                  font-size: 1.5rem;
-                  --bs-icon-link-transform: translateX(-0.25em);
-                "
-              />
+            <button class="bg-transparent text-primary-100 icon-link icon-link-hover border-0" type="button" @click="slidePrev">
+              <Icon icon="mdi:arrow-left" class="bi m-4" style="font-size: 1.5rem; --bs-icon-link-transform: translateX(-0.25em)" />
             </button>
-            <button
-              class="bg-transparent text-primary-100 icon-link icon-link-hover border-0"
-              type="button"
-              @click="slideNext"
-            >
-              <Icon
-                icon="mdi:arrow-right"
-                class="bi m-4"
-                style="font-size: 1.5rem"
-              />
+            <button class="bg-transparent text-primary-100 icon-link icon-link-hover border-0" type="button" @click="slideNext">
+              <Icon icon="mdi:arrow-right" class="bi m-4" style="font-size: 1.5rem" />
             </button>
           </div>
         </div>
@@ -258,171 +207,21 @@ onMounted(() => {
           <div class="deco-line" />
         </div>
         <div class="row flex-nowrap overflow-x-auto">
-          <div class="col-10 col-md-6 col-xl-4">
+          <div v-for="item in foodList" :key="item._id" class="col-10 col-md-6 col-xl-4">
             <div class="card position-relative border-0 rounded-3">
               <picture>
-                <source
-                  srcset="@/assets/images/home-food-1.png"
-                  media="(min-width: 576px)"
-                />
-                <img
-                  class="w-100 rounded-3"
-                  src="@/assets/images/home-food-sm-1.png"
-                  alt="海霸"
-                />
+                <source :srcset="item.image" media="(min-width: 576px)" />
+                <img class="w-100 rounded-3" :src="item.image" alt="item.title" />
               </picture>
-              <div
-                class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-              >
-                <div
-                  class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                >
-                  <h5 class="card-title mb-0 fw-bold">海霸</h5>
-                  <div
-                    class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                  >
-                    <span class="fw-bold">SUN-MON</span>
-                    <span class="fw-bold">11:00 - 20:30</span>
+              <div class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0">
+                <div class="d-flex justify-content-between align-items-center mb-4 mb-md-6">
+                  <h5 class="card-title mb-0 fw-bold">{{ item.title }}</h5>
+                  <div class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7">
+                    <span class="fw-bold">{{ item.diningTime }}</span>
                   </div>
                 </div>
                 <p class="card-text fs-8 fs-md-7">
-                  以新鮮海產料理聞名，我們的專業廚師選用高雄當地的海鮮，每一道菜都充滿海洋的鮮美與清甜。無論是烤魚、蒸蝦還是煮蛤蜊，都能讓您品嚐到最新鮮的海洋風味。
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-10 col-md-6 col-xl-4">
-            <div class="card position-relative border-0 rounded-3">
-              <picture>
-                <source
-                  srcset="@/assets/images/home-food-2.png"
-                  media="(min-width: 576px)"
-                />
-                <img
-                  class="w-100 rounded-3"
-                  src="@/assets/images/home-food-sm-2.png"
-                  alt="日食"
-                />
-              </picture>
-              <div
-                class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-              >
-                <div
-                  class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                >
-                  <h5 class="card-title mb-0 fw-bold">日食</h5>
-                  <div
-                    class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                  >
-                    <span class="fw-bold">SUN-MON</span>
-                    <span class="fw-bold">17:00 - 22:00</span>
-                  </div>
-                </div>
-                <p class="card-text fs-8 fs-md-7">
-                  為您提供優質的牛排，每一塊肉都來自頂級的牛肉，經過專業廚師的巧手烹調，口感豐滿、風味絕佳。搭配我們的特製醬料，讓您的味蕾享受一場美味的盛宴。
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-10 col-md-6 col-xl-4">
-            <div class="card position-relative border-0 rounded-3">
-              <picture>
-                <source
-                  srcset="@/assets/images/home-food-3.png"
-                  media="(min-width: 576px)"
-                />
-                <img
-                  class="w-100 rounded-3"
-                  src="@/assets/images/home-food-sm-3.png"
-                  alt="山臻"
-                />
-              </picture>
-              <div
-                class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-              >
-                <div
-                  class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                >
-                  <h5 class="card-title mb-0 fw-bold">山臻</h5>
-                  <div
-                    class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                  >
-                    <span class="fw-bold">SUN-MON</span>
-                    <span class="fw-bold">11:30 - 20:30</span>
-                  </div>
-                </div>
-                <p class="card-text fs-8 fs-md-7">
-                  帶您進入一次辣味與鮮香兼具的川菜美食之旅。我們的廚師掌握正宗的川菜烹調技巧，從麻辣鍋到口水雞，每一道菜都有其獨特的風味，讓您回味無窮。
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-10 col-md-6 col-xl-4">
-            <div class="card position-relative border-0 rounded-3">
-              <picture>
-                <source
-                  srcset="@/assets/images/home-food-4.png"
-                  media="(min-width: 576px)"
-                />
-                <img
-                  class="w-100 rounded-3"
-                  src="@/assets/images/home-food-sm-4.png"
-                  alt="月永"
-                />
-              </picture>
-              <div
-                class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-              >
-                <div
-                  class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                >
-                  <h5 class="card-title mb-0 fw-bold">月永</h5>
-                  <div
-                    class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                  >
-                    <span class="fw-bold">SUN-MON</span>
-                    <span class="fw-bold">11:00 - 20:00</span>
-                  </div>
-                </div>
-                <p class="card-text fs-8 fs-md-7">
-                  從鮮美的海鮮、經典的牛排，到各國的特色美食，我們都一應俱全。在這裡，您可以品嚐到世界各地的美食，每一道菜都由專業廚師用心製作，讓您在享受美食的同時，也能感受到我們的熱情與用心。
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-10 col-md-6 col-xl-4">
-            <div class="card position-relative border-0 rounded-3">
-              <picture>
-                <source
-                  srcset="@/assets/images/home-food-5.png"
-                  media="(min-width: 576px)"
-                />
-                <img
-                  class="w-100 rounded-3"
-                  src="@/assets/images/home-food-sm-5.png"
-                  alt="天潮"
-                />
-              </picture>
-              <div
-                class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-              >
-                <div
-                  class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                >
-                  <h5 class="card-title mb-0 fw-bold">天潮</h5>
-                  <div
-                    class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                  >
-                    <span class="fw-bold">SUN-MON</span>
-                    <span class="fw-bold">14:00 - 19:30</span>
-                  </div>
-                </div>
-                <p class="card-text fs-8 fs-md-7">
-                  我們提供各種精緻甜點與糕點，無論您喜歡的是巧克力蛋糕、法式馬卡龍，還是台灣傳統的糕點，都能在這裡找到。讓我們的甜點帶您進入一場繽紛的甜蜜旅程。
+                  {{ item.description }}
                 </p>
               </div>
             </div>
@@ -441,59 +240,34 @@ onMounted(() => {
           <div class="col-12 mb-md-10">
             <p class="text-neutral-40 fw-bold">台灣高雄市新興區六角路123號</p>
             <picture>
-              <source
-                srcset="@/assets/images/home-map.png"
-                media="(min-width: 576px)"
-              />
-              <img
-                class="w-100"
-                src="@/assets/images/home-map-sm.png"
-                alt="描述地圖中酒店所在的位置"
-              />
+              <source srcset="@/assets/images/home-map.png" media="(min-width: 576px)" />
+              <img class="w-100" src="@/assets/images/home-map-sm.png" alt="描述地圖中酒店所在的位置" />
             </picture>
           </div>
           <div class="col-12 col-md-4 text-neutral-0">
-            <Icon
-              class="mb-2 mb-md-4 display-1 text-primary-100"
-              icon="ic:baseline-directions-car"
-            />
+            <Icon class="mb-2 mb-md-4 display-1 text-primary-100" icon="ic:baseline-directions-car" />
             <h5 class="fs-7 fs-md-5 fw-bold">自行開車</h5>
             <p class="mb-0 fs-8 fs-md-7">
               如果您選擇自行開車，可以透過國道一號下高雄交流道，往市區方向行駛，並依路標指示即可抵達「享樂酒店」。飯店內設有停車場，讓您停車方便。
             </p>
           </div>
           <div class="col-12 col-md-4 text-neutral-0">
-            <Icon
-              class="mb-2 mb-md-4 display-1 text-primary-100"
-              icon="ic:baseline-train"
-            />
+            <Icon class="mb-2 mb-md-4 display-1 text-primary-100" icon="ic:baseline-train" />
             <h5 class="fs-7 fs-md-5 fw-bold">高鐵/火車</h5>
             <p class="mb-0 fs-8 fs-md-7">
               如果您是搭乘高鐵或火車，可於左營站下車，外頭有計程車站，搭乘計程車約20分鐘即可抵達。或者您也可以轉乘捷運紅線至中央公園站下車，步行約10分鐘便可抵達。
             </p>
           </div>
           <div class="col-12 col-md-4 text-neutral-0">
-            <Icon
-              class="mb-2 mb-md-4 display-1 text-primary-100"
-              icon="mdi:car-side"
-            />
+            <Icon class="mb-2 mb-md-4 display-1 text-primary-100" icon="mdi:car-side" />
             <h5 class="fs-7 fs-md-5 fw-bold">禮賓車服務</h5>
-            <p class="mb-0 fs-8 fs-md-7">
-              承億酒店提供禮賓專車接送服務，但因目的地遠近會有不同的收費，請撥打電話將由專人為您服務洽詢專線：(07)123-4567
-            </p>
+            <p class="mb-0 fs-8 fs-md-7">承億酒店提供禮賓專車接送服務，但因目的地遠近會有不同的收費，請撥打電話將由專人為您服務洽詢專線：(07)123-4567</p>
           </div>
         </div>
       </div>
       <picture>
-        <source
-          srcset="@/assets/images/deco-line-group-horizontal-full.svg"
-          media="(min-width:576px)"
-        />
-        <img
-          class="w-100"
-          src="@/assets/images/deco-line-group-horizontal-sm.svg"
-          alt="deco-line-group"
-        />
+        <source srcset="@/assets/images/deco-line-group-horizontal-full.svg" media="(min-width:576px)" />
+        <img class="w-100" src="@/assets/images/deco-line-group-horizontal-sm.svg" alt="deco-line-group" />
       </picture>
     </section>
   </main>
@@ -683,11 +457,7 @@ section .btn {
 
 .about-content {
   max-width: 1044px;
-  background-image: linear-gradient(
-    180deg,
-    rgba(20, 15, 10, 0.8) 0%,
-    rgba(190, 156, 124, 0.8) 100%
-  );
+  background-image: linear-gradient(180deg, rgba(20, 15, 10, 0.8) 0%, rgba(190, 156, 124, 0.8) 100%);
   backdrop-filter: blur(10px);
   border-width: 0px 0px 1px 1px;
   border-style: solid;
