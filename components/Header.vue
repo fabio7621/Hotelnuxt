@@ -21,6 +21,7 @@ onMounted(() => {
   if (authCookie) {
     userStore.fetchUserData(authCookie);
   }
+  console.log(userStore);
 
   window.addEventListener("scroll", handleScroll);
 });
