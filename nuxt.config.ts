@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     head: {
       viewport: "width=500, initial-scale=1",
       title: "Freyja 旅館",
+
       meta: [
         {
           name: "description",
@@ -33,4 +34,5 @@ export default defineNuxtConfig({
       },
     ],
   ],
+  plugins: [{ src: "./plugins/bootstrap.client.js", mode: "client" }],
 });

@@ -2,7 +2,19 @@
 import BookingLoading from "@/components/rooms/BookingLoading.vue";
 import { Icon } from "@iconify/vue";
 
+const config = useRuntimeConfig();
+const apiUrl = config.public.apiUrl;
+const bookingProfile = ref("");
+
 const router = useRouter();
+const route = useRoute();
+const roomId = route.params.roomid;
+const { data: room, error: roomError } = await useFetch(
+  `api/v1/rooms/${roomId}`,
+  {
+    baseURL: apiUrl,
+  }
+);
 
 const goBack = () => {
   router.back();
@@ -22,6 +34,11 @@ const confirmBooking = () => {
     });
   }, 1500);
 };
+onMounted(() => {
+  if (room.value?.result) {
+    bookingProfile.value = room.value.result;
+  }
+});
 </script>
 
 <template>

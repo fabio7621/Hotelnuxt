@@ -6,6 +6,16 @@ const isEditProfile = ref(false);
 definePageMeta({
   layout: "account",
 });
+const userStore = useUserStore();
+const { userName, userId, userEmail, userPhone, userAddress, userBirthday } =
+  storeToRefs(userStore);
+
+onMounted(() => {
+  const authCookie = useCookie("auth", { path: "/" }).value;
+  if (authCookie) {
+    userStore.fetchUserData(authCookie);
+  }
+});
 </script>
 
 <template>
@@ -20,7 +30,7 @@ definePageMeta({
             <p class="mb-2 text-neutral-80 fw-medium">電子信箱</p>
             <span
               class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              >Jessica@exsample.com</span
+              >{{ userEmail }}</span
             >
           </div>
 
@@ -128,7 +138,7 @@ definePageMeta({
                 'p-4': isEditProfile,
               }"
               type="text"
-              value="Jessica Ｗang"
+              :value="userName"
             />
           </div>
 
@@ -152,7 +162,7 @@ definePageMeta({
                 'p-4': isEditProfile,
               }"
               type="tel"
-              value="+886 912 345 678"
+              :value="userPhone"
             />
           </div>
 
@@ -170,7 +180,7 @@ definePageMeta({
             <span
               class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
               :class="{ 'd-none': isEditProfile }"
-              >1990 年 8 月 15 日</span
+              >{{ userBirthday }}</span
             >
             <div class="d-flex gap-2" :class="{ 'd-none': !isEditProfile }">
               <select
@@ -216,7 +226,7 @@ definePageMeta({
             <span
               class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
               :class="{ 'd-none': isEditProfile }"
-              >高雄市新興區六角路 123 號</span
+              >{{ userAddress }}</span
             >
             <div :class="{ 'd-none': !isEditProfile }">
               <div class="d-flex gap-2 mb-2">

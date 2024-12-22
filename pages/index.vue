@@ -188,7 +188,6 @@ onMounted(() => {
         </div>
       </div>
     </section>
-
     <section
       class="room-intro position-relative px-3 py-20 px-md-0 py-md-30 bg-neutral-120"
     >
