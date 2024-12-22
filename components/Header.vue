@@ -1,7 +1,10 @@
 <script setup>
+import { Icon } from "@iconify/vue";
+
 const route = useRoute();
 const transparentBgRoute = ["home", "rooms"];
-import { Icon } from "@iconify/vue";
+const userStore = useUserStore();
+const { userName } = storeToRefs(userStore);
 
 const isTransparentRoute = computed(() =>
   transparentBgRoute.includes(route.name)
@@ -14,6 +17,11 @@ const handleScroll = () => {
 };
 
 onMounted(() => {
+  const authCookie = useCookie("auth", { path: "/" }).value;
+  if (authCookie) {
+    userStore.fetchUserData(authCookie);
+  }
+
   window.addEventListener("scroll", handleScroll);
 });
 
@@ -72,7 +80,7 @@ onUnmounted(() => {
                   data-bs-toggle="dropdown"
                 >
                   <Icon class="fs-5" icon="mdi:account-circle-outline" />
-                  Jessica
+                  {{ userName }}
                 </button>
                 <ul
                   class="dropdown-menu py-3 overflow-hidden"

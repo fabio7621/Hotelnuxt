@@ -7,15 +7,19 @@ const { $swal } = useNuxtApp();
 const router = useRouter();
 const config = useRuntimeConfig();
 const apiUrl = config.public.apiUrl;
-// 表單格式
+
 const userLoginObject = ref({
   email: "",
   password: "",
 });
 
+// 导入 Pinia store
+const { fetchUserData } = useUserStore();
+
 const loginAccount = async (requsetBody) => {
   try {
-    const { token } = await $fetch("api/v1/home/news", {
+    // 登录请求
+    const { token } = await $fetch("/api/v1/user/login", {
       baseURL: apiUrl,
       method: "POST",
       body: {
@@ -23,11 +27,14 @@ const loginAccount = async (requsetBody) => {
       },
     });
 
-    const auth = useCookie("auth", {
-      path: "/",
-    });
+    // 存储 token
+    const auth = useCookie("auth", { path: "/" });
     auth.value = token;
 
+    // 使用 token 获取用户数据
+    await fetchUserData(token);
+
+    // 提示成功并跳转
     $swal.fire({
       position: "center",
       icon: "success",
@@ -50,7 +57,6 @@ const loginAccount = async (requsetBody) => {
   }
 };
 </script>
-
 <template>
   <div class="px-5 px-md-0">
     <div class="mb-10">
