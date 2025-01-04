@@ -16,6 +16,19 @@ const handleScroll = () => {
   isScrolled.value = window.scrollY > 50;
 };
 
+const signOut = () => {
+  $swal.fire({
+    position: "center",
+    icon: "success",
+    title: "已登出",
+    showConfirmButton: false,
+    timer: 1500,
+  });
+  getUserCookie.value = null;
+  const config = useRuntimeConfig();
+  navigateTo(config.public.defaultLogoutRedirect || "/");
+};
+
 onMounted(() => {
   const authCookie = useCookie("auth", { path: "/" }).value;
   if (authCookie) {
@@ -83,15 +96,13 @@ onUnmounted(() => {
                   style="right: 0; left: auto; border-radius: 20px"
                 >
                   <li>
-                    <NuxtLink
-                      :to="`user/${userId}/profile`"
-                      class="dropdown-item px-6 py-4"
+                    <NuxtLink to="/user/profile" class="dropdown-item px-6 py-4"
                       >我的帳戶</NuxtLink
                     >
                   </li>
                   <li>
-                    <NuxtLink class="dropdown-item px-6 py-4" href="#"
-                      >登出</NuxtLink
+                    <a @click="signOut" class="dropdown-item px-6 py-4" href="#"
+                      >登出</a
                     >
                   </li>
                 </ul>

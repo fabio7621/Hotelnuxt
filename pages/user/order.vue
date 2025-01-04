@@ -3,8 +3,9 @@ import { Icon } from "@iconify/vue";
 
 definePageMeta({
   layout: "user",
+  middleware: ["auth"],
 });
-const roomId = "a"; // for navigation demo
+const roomId = "a";
 </script>
 
 <template>

@@ -1,5 +1,4 @@
 <script setup>
-import DatePickerModal from "@/components/rooms/DatePickerModal.vue";
 import { Icon } from "@iconify/vue";
 
 const datePickerModal = ref(null);

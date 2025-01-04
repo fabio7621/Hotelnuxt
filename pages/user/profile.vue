@@ -1,21 +1,13 @@
 <script setup>
-import { ref } from "vue";
-
+definePageMeta({
+  layout: "user",
+  middleware: ["auth"],
+});
 const isEditPassword = ref(false);
 const isEditProfile = ref(false);
-definePageMeta({
-  layout: "account",
-});
 const userStore = useUserStore();
 const { userName, userId, userEmail, userPhone, userAddress, userBirthday } =
   storeToRefs(userStore);
-
-onMounted(() => {
-  const authCookie = useCookie("auth", { path: "/" }).value;
-  if (authCookie) {
-    userStore.fetchUserData(authCookie);
-  }
-});
 </script>
 
 <template>

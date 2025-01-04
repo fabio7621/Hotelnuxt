@@ -13,12 +13,10 @@ const userLoginObject = ref({
   password: "",
 });
 
-// 导入 Pinia store
 const { fetchUserData } = useUserStore();
 
 const loginAccount = async (requsetBody) => {
   try {
-    // 登录请求
     const { token } = await $fetch("/api/v1/user/login", {
       baseURL: apiUrl,
       method: "POST",
@@ -27,14 +25,11 @@ const loginAccount = async (requsetBody) => {
       },
     });
 
-    // 存储 token
     const auth = useCookie("auth", { path: "/" });
     auth.value = token;
 
-    // 使用 token 获取用户数据
     await fetchUserData(token);
 
-    // 提示成功并跳转
     $swal.fire({
       position: "center",
       icon: "success",
