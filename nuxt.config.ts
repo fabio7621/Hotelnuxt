@@ -34,5 +34,4 @@ export default defineNuxtConfig({
       },
     ],
   ],
-  plugins: [{ src: "./plugins/bootstrap.client.js", mode: "client" }],
 });

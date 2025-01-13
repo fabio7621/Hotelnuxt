@@ -1,50 +1,33 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue";
-
-import { DatePicker } from "v-calendar";
-import "v-calendar/style.css";
+import { RoomsDatePickerModal } from "#build/components";
 import { useScreens } from "vue-screen-utils";
 
-import { Icon } from "@iconify/vue";
-
+// modal
+const { $bootstrap } = useNuxtApp();
 const modal = ref(null);
 
-const { $modal } = useNuxtApp();
 onMounted(() => {
-  const modalEl = document.getElementById("dateModal");
-  if (modalEl) {
-    modal.value = new $modal(modalEl);
-  }
+  modal.value = new $bootstrap.Modal(document.getElementById("dateModal"));
 });
+
 const openModal = () => {
-  modal.value.show();
+  modal.show();
 };
-
 const closeModal = () => {
-  modal.value.hide();
+  modal.hide();
 };
-
 defineExpose({
   openModal,
   closeModal,
 });
 
-const emit = defineEmits(["handleDateChange"]);
-
-const props = defineProps({
-  dateTime: {
-    type: Object,
-    required: true,
-  },
-});
-
 const tempDate = reactive({
   date: {
-    start: props.dateTime.date.start,
-    end: props.dateTime.date.end,
+    start: bookingDate.date.start,
+    end: bookingDate.date.end,
   },
-  minDate: props.dateTime.minDate,
-  maxDate: props.dateTime.maxDate,
+  minDate: bookingDate.minDate,
+  maxDate: bookingDate.maxDate,
   key: 0,
 });
 
@@ -53,6 +36,7 @@ const masks = {
   modelValue: "YYYY-MM-DD",
 };
 
+// useScreens
 const { mapCurrent } = useScreens({
   md: "768px",
 });
@@ -91,13 +75,13 @@ const confirmDate = () => {
   const isMobile = mapCurrent({ md: false }, true);
 
   if (isMobile.value) {
-    emit("handleDateChange", {
+    handleDateChange({
       date: tempDate.date,
       people: bookingPeopleMobile,
       daysCount,
     });
   } else {
-    emit("handleDateChange", {
+    handleDateChange({
       date: tempDate.date,
       daysCount,
     });
@@ -199,19 +183,9 @@ const clearDate = () => {
         <div class="modal-body px-6 px-md-8 py-0">
           <div v-if="!isConfirmDateOnMobile" class="date-picker">
             <!-- v-model.range.string="tempDate.date" -->
-            <DatePicker
-              :key="tempDate.key"
-              color="primary"
-              :masks="masks"
-              :first-day-of-week="1"
-              :min-date="tempDate.minDate"
-              :max-date="tempDate.maxDate"
-              :rows="rows"
-              :columns="columns"
-              :expanded="expanded"
-              :title-position="titlePosition"
-              class="border-0"
-            />
+            <ClientOnly>
+              <RoomsDatePickerModal ref="datePickerModal" />
+            </ClientOnly>
           </div>
 
           <div v-else>

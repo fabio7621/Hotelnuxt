@@ -1,12 +1,14 @@
 <script setup>
 import { Icon } from "@iconify/vue";
-
 const datePickerModal = ref(null);
 
 const openModal = () => {
   datePickerModal.value.openModal();
 };
 
+onMounted(() => {
+  console.log("datePickerModal.value:", datePickerModal.value);
+});
 const MAX_BOOKING_PEOPLE = 10;
 const bookingPeople = ref(1);
 
@@ -444,12 +446,13 @@ onMounted(() => {
         </template>
       </div>
     </section>
-
-    <DatePickerModal
-      ref="datePickerModal"
-      :date-time="bookingDate"
-      @handle-date-change="handleDateChange"
-    />
+    <ClientOnly>
+      <RoomsDatePickerModal
+        ref="datePickerModal"
+        :date-time="bookingDate"
+        @handle-date-change="handleDateChange"
+      />
+    </ClientOnly>
   </main>
 </template>
 

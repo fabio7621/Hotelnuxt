@@ -1,5 +1,7 @@
 <script setup>
 import DefaultLayout from "./default.vue";
+const userStore = useUserStore();
+const { userName } = storeToRefs(userStore);
 </script>
 
 <template>
