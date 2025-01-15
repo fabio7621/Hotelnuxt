@@ -1,33 +1,47 @@
 <script setup>
-import { RoomsDatePickerModal } from "#build/components";
+import { DatePicker } from "v-calendar";
+import "v-calendar/style.css";
 import { useScreens } from "vue-screen-utils";
 
-// modal
-const { $bootstrap } = useNuxtApp();
+import { Icon } from "@iconify/vue";
+const dateModal = ref(null);
 const modal = ref(null);
 
 onMounted(() => {
-  modal.value = new $bootstrap.Modal(document.getElementById("dateModal"));
+  const { $bootstrap } = useNuxtApp();
+
+  modal.value = new $bootstrap.Modal(dateModal.value);
 });
 
 const openModal = () => {
-  modal.show();
+  modal.value.show();
 };
+
 const closeModal = () => {
-  modal.hide();
+  modal.value.hide();
 };
+
 defineExpose({
   openModal,
   closeModal,
 });
 
+const emit = defineEmits(["handleDateChange"]);
+
+const props = defineProps({
+  dateTime: {
+    type: Object,
+    required: true,
+  },
+});
+
 const tempDate = reactive({
   date: {
-    start: bookingDate.date.start,
-    end: bookingDate.date.end,
+    start: props.dateTime.date.start,
+    end: props.dateTime.date.end,
   },
-  minDate: bookingDate.minDate,
-  maxDate: bookingDate.maxDate,
+  minDate: props.dateTime.minDate,
+  maxDate: props.dateTime.maxDate,
   key: 0,
 });
 
@@ -36,7 +50,6 @@ const masks = {
   modelValue: "YYYY-MM-DD",
 };
 
-// useScreens
 const { mapCurrent } = useScreens({
   md: "768px",
 });
@@ -75,13 +88,13 @@ const confirmDate = () => {
   const isMobile = mapCurrent({ md: false }, true);
 
   if (isMobile.value) {
-    handleDateChange({
+    emit("handleDateChange", {
       date: tempDate.date,
       people: bookingPeopleMobile,
       daysCount,
     });
   } else {
-    handleDateChange({
+    emit("handleDateChange", {
       date: tempDate.date,
       daysCount,
     });
@@ -98,7 +111,13 @@ const clearDate = () => {
 </script>
 
 <template>
-  <div id="dateModal" class="modal fade" tabindex="-1" aria-hidden="true">
+  <div
+    ref="dateModal"
+    id="dateModal"
+    class="modal fade"
+    tabindex="-1"
+    aria-hidden="true"
+  >
     <div class="modal-dialog modal-dialog-centered m-0 mt-9 mx-md-auto">
       <div
         :class="{ 'mt-auto': isConfirmDateOnMobile }"
@@ -182,10 +201,20 @@ const clearDate = () => {
         </div>
         <div class="modal-body px-6 px-md-8 py-0">
           <div v-if="!isConfirmDateOnMobile" class="date-picker">
-            <!-- v-model.range.string="tempDate.date" -->
-            <ClientOnly>
-              <RoomsDatePickerModal ref="datePickerModal" />
-            </ClientOnly>
+            <DatePicker
+              :key="tempDate.key"
+              v-model.range.string="tempDate.date"
+              color="primary"
+              :masks="masks"
+              :first-day-of-week="1"
+              :min-date="tempDate.minDate"
+              :max-date="tempDate.maxDate"
+              :rows="rows"
+              :columns="columns"
+              :expanded="expanded"
+              :title-position="titlePosition"
+              class="border-0"
+            />
           </div>
 
           <div v-else>

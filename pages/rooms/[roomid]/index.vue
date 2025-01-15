@@ -1,9 +1,9 @@
 <script setup>
 import { Icon } from "@iconify/vue";
-const datePickerModal = ref(null);
+const datePickerModal = useTemplateRef("datePickerModal");
 
 const openModal = () => {
-  datePickerModal.value.openModal();
+  datePickerModal.value?.openModal();
 };
 
 onMounted(() => {
