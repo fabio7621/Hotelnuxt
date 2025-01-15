@@ -6,10 +6,8 @@ import { useScreens } from "vue-screen-utils";
 import { Icon } from "@iconify/vue";
 const dateModal = ref(null);
 const modal = ref(null);
-
+const { $bootstrap } = useNuxtApp();
 onMounted(() => {
-  const { $bootstrap } = useNuxtApp();
-
   modal.value = new $bootstrap.Modal(dateModal.value);
 });
 
