@@ -1,7 +1,7 @@
 <script setup>
 import { Icon } from "@iconify/vue";
 const datePickerModal = useTemplateRef("datePickerModal");
-
+const { $swal } = useNuxtApp();
 const openModal = () => {
   datePickerModal.value?.openModal();
 };
@@ -10,41 +10,22 @@ onMounted(() => {
   console.log("datePickerModal.value:", datePickerModal.value);
 });
 const MAX_BOOKING_PEOPLE = 10;
-const bookingPeople = ref(1);
-
-const daysCount = ref(0);
 
 const daysFormatOnMobile = (date) => date?.split("-").slice(1, 3).join(" / ");
 
-const formatDate = (date) => {
-  const offsetToUTC8 = date.getHours() + 8;
-  date.setHours(offsetToUTC8);
-  return date.toISOString().split("T")[0];
-};
+const dateTimeStore = useDateTimeStore();
+const { bookingPeople } = storeToRefs(dateTimeStore);
+const { daysCount } = storeToRefs(dateTimeStore);
+const { bookingDate } = dateTimeStore;
+const bookingStore = useBookingStore();
+const { createBooking } = bookingStore;
 
-const currentDate = new Date();
-
-const bookingDate = reactive({
-  date: {
-    start: formatDate(currentDate),
-    end: null,
-  },
-  minDate: new Date(),
-  maxDate: new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)),
-});
-
-const handleDateChange = (bookingInfo) => {
-  const { start, end } = bookingInfo.date;
-  bookingDate.date.start = start;
-  bookingDate.date.end = end;
-
-  bookingPeople.value = bookingInfo?.people || 1;
-  daysCount.value = bookingInfo.daysCount;
-};
 const config = useRuntimeConfig();
 const apiUrl = config.public.apiUrl;
 
 const roomProfile = ref({});
+
+const router = useRouter();
 //取得特定房型
 const route = useRoute();
 
@@ -61,6 +42,39 @@ onMounted(() => {
     roomProfile.value = room.value.result;
   }
 });
+// 計算天數
+const countDateDiffs = ({ start, end }) => {
+  var startDate = new Date(start);
+  var endDate = new Date(end);
+  return parseInt(Math.abs(startDate - endDate) / 1000 / 60 / 60 / 24);
+};
+
+const toReserve = () => {
+  const peopleNum = bookingPeople.value;
+  const checkInDate = bookingDate.date.start;
+  const checkOutDate = bookingDate.date.end;
+
+  if (!checkInDate || !checkOutDate) {
+    $swal.fire({
+      position: "center",
+      icon: "error",
+      title: "請選擇入住與退房日期",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    return;
+  }
+
+  createBooking({
+    roomId,
+    peopleNum,
+    checkInDate,
+    checkOutDate,
+    bookingDays: countDateDiffs(bookingDate.date),
+  });
+
+  router.push(`/rooms/${roomId}/booking`);
+};
 </script>
 
 <template>
@@ -400,12 +414,12 @@ onMounted(() => {
               </div>
 
               <h5 class="mb-0 text-primary-100 fw-bold">NT$ 10,000</h5>
-              <NuxtLink
-                to="/"
+              <button
                 class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3"
+                @click="toReserve"
               >
                 立即預訂
-              </NuxtLink>
+              </button>
             </div>
           </div>
         </div>
@@ -436,13 +450,13 @@ onMounted(() => {
               {{ daysFormatOnMobile(bookingDate.date?.end) }}</span
             >
           </div>
-          <NuxtLink
+          <button
             v-if="roomProfile?._id"
-            :to="`/rooms/${roomProfile._id}/booking`"
+            @click="toReserve"
             class="btn btn-primary-100 px-12 py-4 text-neutral-0 fw-bold rounded-3"
           >
             立即預訂
-          </NuxtLink>
+          </button>
         </template>
       </div>
     </section>

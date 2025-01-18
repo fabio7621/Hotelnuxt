@@ -7,6 +7,10 @@ export const useUserStore = defineStore("userStore", () => {
   const userEmail = ref("");
   const userPhone = ref("");
   const userAddress = ref({});
+  const userCity = ref({});
+  const userCounty = ref({});
+  const userDetail = ref({});
+  const userZipcode = ref({});
   const address = ref({});
   const birthday = ref("");
   const userBirthday = ref("");
@@ -40,10 +44,16 @@ export const useUserStore = defineStore("userStore", () => {
       userId.value = data.value?.result?.id;
       userEmail.value = data.value?.result?.email;
       userPhone.value = data.value?.result?.phone;
+
       address.value = data.value?.result?.address;
       userAddress.value = `${address.value.city || ""}${
         address.value.county || ""
       }${address.value.detail || ""}`;
+      userCity.value = `${address.value.city}`;
+      userCounty.value = `${address.value.county}`;
+      userDetail.value = `${address.value.detail}`;
+      userZipcode.value = `${address.value.zipcode}`;
+
       birthday.value = data.value?.result?.birthday;
       const date = new Date(birthday.value); // 將字串轉為 Date 物件
       userBirthday.value = `${date.getFullYear()}年${
@@ -60,6 +70,10 @@ export const useUserStore = defineStore("userStore", () => {
     userEmail,
     userPhone,
     userAddress,
+    userCity,
+    userCounty,
+    userDetail,
+    userZipcode,
     fetchUserData,
     userBirthday,
   };

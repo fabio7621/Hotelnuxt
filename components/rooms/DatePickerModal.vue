@@ -2,8 +2,12 @@
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import { useScreens } from "vue-screen-utils";
-
 import { Icon } from "@iconify/vue";
+
+const dateTimeStore = useDateTimeStore();
+const { bookingDate } = dateTimeStore;
+const { handleDateChange } = dateTimeStore;
+
 const dateModal = ref(null);
 const modal = ref(null);
 const { $bootstrap } = useNuxtApp();
@@ -35,11 +39,11 @@ const props = defineProps({
 
 const tempDate = reactive({
   date: {
-    start: props.dateTime.date.start,
-    end: props.dateTime.date.end,
+    start: bookingDate.date.start,
+    end: bookingDate.date.end,
   },
-  minDate: props.dateTime.minDate,
-  maxDate: props.dateTime.maxDate,
+  minDate: bookingDate.minDate,
+  maxDate: bookingDate.maxDate,
   key: 0,
 });
 
@@ -86,13 +90,13 @@ const confirmDate = () => {
   const isMobile = mapCurrent({ md: false }, true);
 
   if (isMobile.value) {
-    emit("handleDateChange", {
+    handleDateChange({
       date: tempDate.date,
       people: bookingPeopleMobile,
       daysCount,
     });
   } else {
-    emit("handleDateChange", {
+    handleDateChange({
       date: tempDate.date,
       daysCount,
     });

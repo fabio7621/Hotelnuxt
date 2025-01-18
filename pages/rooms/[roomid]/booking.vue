@@ -1,7 +1,12 @@
 <script setup>
-import BookingLoading from "@/components/rooms/BookingLoading.vue";
-import { Icon } from "@iconify/vue";
+definePageMeta({
+  middleware: ["auth"],
+});
 
+import { Icon } from "@iconify/vue";
+const userStore = useUserStore();
+const { userName, userId, userZipcode, userDetail, userEmail, userPhone } =
+  storeToRefs(userStore);
 const config = useRuntimeConfig();
 const apiUrl = config.public.apiUrl;
 const bookingProfile = ref("");
@@ -15,6 +20,21 @@ const { data: room, error: roomError } = await useFetch(
     baseURL: apiUrl,
   }
 );
+const orderData = ref({
+  roomId: roomId,
+  checkInDate: "",
+  checkOutDate: "",
+  peopleNum: 0,
+  userInfo: {
+    address: {
+      zipcode: userZipcode.value,
+      detail: userDetail.value,
+    },
+    name: userName.value,
+    phone: userPhone.value,
+    email: userEmail.value,
+  },
+});
 
 const goBack = () => {
   router.back();
@@ -512,7 +532,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <BookingLoading v-if="isLoading" />
+    <RoomsBookingLoading v-if="isLoading" />
   </main>
 </template>
 
