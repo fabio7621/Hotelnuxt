@@ -412,8 +412,12 @@ const toReserve = () => {
                   </div>
                 </div>
               </div>
-
-              <h5 class="mb-0 text-primary-100 fw-bold">NT$ 10,000</h5>
+              <h5 v-if="!daysCount" class="mb-0 text-primary-100 fw-bold">
+                NT$ 10000
+              </h5>
+              <h5 v-else class="mb-0 text-primary-100 fw-bold">
+                NT$ {{ Number(roomProfile.price) * Number(daysCount) }}
+              </h5>
               <button
                 class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3"
                 @click="toReserve"
