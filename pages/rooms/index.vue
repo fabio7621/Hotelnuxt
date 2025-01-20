@@ -44,6 +44,14 @@ onMounted(() => {
     roomList.value = rooms.value.result;
   }
 });
+
+// seo
+useSeoMeta({
+  title: () => `Freyja | 客房旅宿`,
+  ogTitle: () => `Freyja | 客房旅宿`,
+  twitterCard: "summary_large_image",
+  twitterTitle: () => `Freyja | 客房旅宿`,
+});
 </script>
 
 <template>

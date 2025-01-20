@@ -1,7 +1,7 @@
 export const useUserStore = defineStore("userStore", () => {
   const config = useRuntimeConfig();
   const apiUrl = config.public.apiUrl;
-
+  const userAll = ref("");
   const userName = ref("");
   const userId = ref("");
   const userEmail = ref("");
@@ -41,30 +41,28 @@ export const useUserStore = defineStore("userStore", () => {
       }
 
       userName.value = data.value?.result?.name || "未登入";
-      userId.value = data.value?.result?.id;
+      userId.value = data.value?.result?._id;
       userEmail.value = data.value?.result?.email;
       userPhone.value = data.value?.result?.phone;
 
       address.value = data.value?.result?.address;
-      userAddress.value = `${address.value.city || ""}${
-        address.value.county || ""
-      }${address.value.detail || ""}`;
-      userCity.value = `${address.value.city}`;
-      userCounty.value = `${address.value.county}`;
-      userDetail.value = `${address.value.detail}`;
-      userZipcode.value = `${address.value.zipcode}`;
+      userAddress.value = `${address.value.city || ""}${address.value.county || ""}${address.value.detail || ""}`;
+      userCity.value = address.value?.city;
+      userCounty.value = address.value?.county;
+      userDetail.value = address.value.detail;
+      userZipcode.value = address.value?.zipcode;
+      userAll.value = data.value?.result;
 
       birthday.value = data.value?.result?.birthday;
       const date = new Date(birthday.value); // 將字串轉為 Date 物件
-      userBirthday.value = `${date.getFullYear()}年${
-        date.getMonth() + 1
-      }月${date.getDate()}日`;
+      userBirthday.value = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
     } catch (err) {
       userName.value = "未登入";
     }
   };
 
   return {
+    userAll,
     userId,
     userName,
     userEmail,

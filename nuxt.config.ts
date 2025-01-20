@@ -26,12 +26,12 @@ export default defineNuxtConfig({
       ],
     },
   },
-  modules: [
-    [
-      "@pinia/nuxt",
-      {
-        autoImports: ["defineStore", "acceptHMRUpdate"],
-      },
-    ],
-  ],
+  modules: ["@pinia/nuxt", "@vee-validate/nuxt"],
+  veeValidate: {
+    componentNames: {
+      Form: "VForm",
+      Field: "VField",
+      ErrorMessage: "VErrorMessage",
+    },
+  },
 });
