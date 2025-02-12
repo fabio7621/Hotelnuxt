@@ -55,17 +55,13 @@ const loginAccount = async (requsetBody) => {
 <template>
   <div class="px-5 px-md-0">
     <div class="mb-10">
-      <p class="mb-2 text-primary-100 fs-8 fs-md-7 fw-bold">
-        享樂酒店，誠摯歡迎
-      </p>
+      <p class="mb-2 text-primary-100 fs-8 fs-md-7 fw-bold">享樂酒店，誠摯歡迎</p>
       <h1 class="text-neutral-0 fw-bold">立即開始旅程</h1>
     </div>
 
     <form class="mb-10">
       <div class="mb-4 fs-8 fs-md-7">
-        <label class="mb-2 text-neutral-0 fw-bold" for="email">
-          電子信箱
-        </label>
+        <label class="mb-2 text-neutral-0 fw-bold" for="email"> 電子信箱 </label>
         <input
           id="email"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
@@ -84,10 +80,8 @@ const loginAccount = async (requsetBody) => {
           v-model="userLoginObject.password"
         />
       </div>
-      <div
-        class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7"
-      >
-        <div class="form-check d-flex align-items-end gap-2 text-neutral-0">
+      <div class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7">
+        <!-- <div class="form-check d-flex align-items-end gap-2 text-neutral-0">
           <input
             id="remember"
             class="form-check-input"
@@ -103,23 +97,14 @@ const loginAccount = async (requsetBody) => {
           type="button"
         >
           忘記密碼？
-        </button>
+        </button> -->
       </div>
-      <button
-        class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-        type="button"
-        @click="loginAccount(userLoginObject)"
-      >
-        會員登入
-      </button>
+      <button class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold" type="button" @click="loginAccount(userLoginObject)">會員登入</button>
     </form>
 
     <p class="mb-0 fs-8 fs-md-7">
       <span class="me-2 text-neutral-0 fw-medium">沒有會員嗎？</span>
-      <RouterLink
-        to="signup"
-        class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
-      >
+      <RouterLink to="signup" class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0">
         <span>前往註冊</span>
       </RouterLink>
     </p>
