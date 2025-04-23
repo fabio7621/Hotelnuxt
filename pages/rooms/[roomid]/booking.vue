@@ -3,25 +3,29 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const { $formatPrice } = useNuxtApp();
-const { $swal } = useNuxtApp();
 import { Icon } from "@iconify/vue";
+const { $formatPrice, $swal } = useNuxtApp();
+
+// Stores
 const userStore = useUserStore();
+const bookingStore = useBookingStore();
 const { userName, userId, userZipcode, userDetail, userEmail, userPhone } = storeToRefs(userStore);
+const { bookingResult } = storeToRefs(bookingStore);
+
+// Config & Router
 const config = useRuntimeConfig();
 const apiUrl = config.public.apiUrl;
-const sendBookingRequest = ref(false);
-
-const bookingProfile = ref("");
-
+const token = useCookie("auth");
 const router = useRouter();
 const route = useRoute();
 const roomProfileId = route.params.roomid;
-const token = useCookie("auth");
+
+// Room 資料
 const { data: room, error: roomError } = await useFetch(`api/v1/rooms/${roomProfileId}`, {
   baseURL: apiUrl,
 });
 
+const bookingProfile = ref("");
 onMounted(() => {
   if (room.value?.result) {
     bookingProfile.value = room.value.result;
@@ -29,11 +33,6 @@ onMounted(() => {
 });
 
 // 訂購人資料
-const bookingStore = useBookingStore();
-const { bookingResult } = storeToRefs(bookingStore);
-
-// 訂購人資料
-
 const orderUserInfo = ref({
   address: {
     zipcode: userZipcode.value,
@@ -43,6 +42,8 @@ const orderUserInfo = ref({
   phone: userPhone.value,
   email: userEmail.value,
 });
+
+// 建立 bookingData
 const { roomId, checkInDate, checkOutDate, peopleNum } = bookingResult.value;
 const bookingData = ref({
   roomId,
@@ -60,37 +61,42 @@ const bookingData = ref({
   },
 });
 
-// 一鍵帶入會員資料
+// 套用會員資料
 const fillMemberData = () => {
   bookingData.value.userInfo = {
     ...orderUserInfo.value,
   };
 };
 
-// 編輯訂房資訊狀態
+// 編輯房客人數
 const isPeopleEdit = ref(false);
 const temPeopleNum = ref(bookingData.value.peopleNum);
-const onInput = () => {
+
+const onInput = (event) => {
   const value = event.target.value;
 
-  // 限制用戶無法輸入數字以外的值
   if (isNaN(value) || value === "") {
     temPeopleNum.value = "";
   } else {
-    // 如果輸入的數字超過最大人數，將數字等於最大人數
-    if (parseInt(value) > roomList.value.maxPeople) {
-      temPeopleNum.value = roomList.value.maxPeople;
-    }
+    const max = bookingProfile.value?.maxPeople || 10;
+    const parsed = parseInt(value);
+    temPeopleNum.value = parsed > max ? max : parsed;
   }
 };
+
 const changePeopleNum = () => {
-  isPeopleEdit.value = !isPeopleEdit.value;
+  isPeopleEdit.value = false;
   bookingData.value.peopleNum = temPeopleNum.value;
 };
+
+// 返回上一頁
 const goBack = () => {
   router.back();
 };
+
+// 確認訂房
 const isLoading = ref(false);
+const sendBookingRequest = ref(false);
 
 const confirmBooking = async () => {
   try {
@@ -103,14 +109,12 @@ const confirmBooking = async () => {
       headers: {
         Authorization: token.value,
       },
-      body: {
-        ...bookingData.value,
-      },
+      body: { ...bookingData.value },
     });
 
     const bookingId = response?.result?._id;
 
-    $swal.fire({
+    await $swal.fire({
       position: "center",
       icon: "success",
       title: "預訂成功",
@@ -120,10 +124,8 @@ const confirmBooking = async () => {
 
     router.push(`/rooms/booking/confirmation/${bookingId}`);
   } catch (error) {
-    console.log(error);
-
-    const message = error.response?._data.message;
-    $swal.fire({
+    const message = error.response?._data.message || "預訂失敗，請稍後再試";
+    await $swal.fire({
       position: "center",
       icon: "error",
       title: message,
@@ -135,14 +137,14 @@ const confirmBooking = async () => {
   }
 };
 
-// seo
+// SEO 設定
 useSeoMeta({
   title: () => `Freyja | ${bookingProfile.value.name} ｜確認訂房資訊`,
   ogTitle: () => `Freyja | ${bookingProfile.value.name} ｜確認訂房資訊`,
-  ogImage: () => `${bookingProfile.value.imageUrl}`,
+  ogImage: () => bookingProfile.value.imageUrl,
   twitterCard: "summary_large_image",
   twitterTitle: () => `Freyja | ${bookingProfile.value.name} ｜確認訂房資訊`,
-  twitterImage: () => `${bookingProfile.value.imageUrl}`,
+  twitterImage: () => bookingProfile.value.imageUrl,
 });
 </script>
 

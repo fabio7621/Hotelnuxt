@@ -1,19 +1,15 @@
 export default defineNuxtRouteMiddleware(async () => {
   const nuxtApp = useNuxtApp();
-
   const config = useRuntimeConfig();
   const apiUrl = config.public.apiUrl;
-  if (
-    import.meta.client &&
-    nuxtApp.isHydrating &&
-    nuxtApp.payload.serverRendered
-  ) {
+  const token = useCookie("auth");
+
+  if (import.meta.client && nuxtApp.isHydrating && nuxtApp.payload.serverRendered) {
     return;
   }
 
-  const token = useCookie("auth");
   if (!token.value) {
-    navigateTo("account/login");
+    return navigateTo("/account/login");
   }
 
   try {
@@ -26,6 +22,6 @@ export default defineNuxtRouteMiddleware(async () => {
     });
   } catch (error) {
     token.value = null;
-    return navigateTo("account/login");
+    return navigateTo("/account/login");
   }
 });
