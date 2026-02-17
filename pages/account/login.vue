@@ -15,13 +15,13 @@ const userLoginObject = ref({
 
 const { fetchUserData } = useUserStore();
 
-const loginAccount = async (requsetBody) => {
+const loginAccount = async (requestBody) => {
   try {
     const { token } = await $fetch("/api/v1/user/login", {
       baseURL: apiUrl,
       method: "POST",
       body: {
-        ...requsetBody,
+        ...requestBody,
       },
     });
 
@@ -40,8 +40,7 @@ const loginAccount = async (requsetBody) => {
 
     router.push("/");
   } catch (error) {
-    console.dir(error);
-    const { message } = error.response._data;
+    const message = error?.response?._data?.message || "登入失敗，請稍後再試";
     $swal.fire({
       position: "center",
       icon: "error",

@@ -2,6 +2,7 @@ export default defineNuxtRouteMiddleware(async () => {
   const nuxtApp = useNuxtApp();
   const config = useRuntimeConfig();
   const apiUrl = config.public.apiUrl;
+  const LOGIN_PAGE_PATH = "/account/login";
   const token = useCookie("auth");
 
   if (import.meta.client && nuxtApp.isHydrating && nuxtApp.payload.serverRendered) {
@@ -9,7 +10,7 @@ export default defineNuxtRouteMiddleware(async () => {
   }
 
   if (!token.value) {
-    return navigateTo("/account/login");
+    return navigateTo(LOGIN_PAGE_PATH);
   }
 
   try {
@@ -22,6 +23,6 @@ export default defineNuxtRouteMiddleware(async () => {
     });
   } catch (error) {
     token.value = null;
-    return navigateTo("/account/login");
+    return navigateTo(LOGIN_PAGE_PATH);
   }
 });
