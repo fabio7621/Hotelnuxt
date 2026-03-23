@@ -23,9 +23,9 @@
     "sweetalert2": "^11.22.4",
     "swiper": "^12.1.2",
     "v-calendar": "^3.1.2",
-    "vue": "latest",
+    "vue": "^3.5.30",
     "vue-loading-overlay": "^6.0.6",
-    "vue-router": "latest",
+    "vue-router": "^4.6.4",
     "vue-screen-utils": "^1.0.0-beta.13"
   },
   "devDependencies": {
