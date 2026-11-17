@@ -52,6 +52,8 @@ const handleFetchError = ({ response }) => {
 const { data: userData } = await useFetch(`api/v1/user`, {
   baseURL: apiUrl,
   method: "GET",
+  // Nuxt 4 預設 data 為 shallowRef；這裡有 v-model 直接改巢狀欄位，需要深層響應
+  deep: true,
   headers: {
     Authorization: token.value,
   },
